@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # Match the Node version the admin portal is developed against.
+  NODE_VERSION = "22"
+
+# Runs the App Router on Netlify: server components, dynamic pages (?id=, ?demo=)
+# and static assets. Netlify installs it from npm, so it stays out of package.json.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
