@@ -1,0 +1,38 @@
+/* Semantic aliases and spacing from the Choices Design System
+   (tokens/colors.css and tokens/spacing.css), copied verbatim. */
+
+/* Semantic aliases over the raw Figma variables in components/fig-tokens.css.
+   Use these in new work; the fig-* tokens remain as the literal source values. */
+:root {
+  --color-brand-purple: var(--primary-purple-500); /* rgb(46,19,116) */
+  --color-brand-peach: var(--peach-2); /* rgb(244,114,97) — primary CTA accent */
+  --color-brand-teal: rgb(0,164,153); /* selected / success state */
+  --color-text-primary: rgb(0,0,0);
+  --color-text-secondary: rgb(122,122,122);
+  --color-text-inverse: rgb(255,255,255);
+  --color-surface: rgb(255,255,255);
+  --color-surface-muted: rgb(238,237,242); /* input fill */
+  --color-surface-tint-peach: rgba(244,114,97,0.05);
+  --color-surface-tint-purple: rgba(46,19,116,0.08);
+  --color-border-subtle: rgba(0,0,0,0.05);
+  --color-border-focus: var(--primary-purple-500);
+  --color-cta-bg: var(--peach-2);
+  --color-cta-text: rgb(255,255,255);
+}
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 170px;
+  --shadow-card: 0px 4px 12px 0px rgba(0,0,0,0.08);
+  --shadow-card-selected: inset 0 0 0 1.5px var(--peach-2), 0px 4px 12px 0px rgba(0,0,0,0.08);
+}

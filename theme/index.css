@@ -1,0 +1,6 @@
+/* Choices theme: single entry point. app/globals.css imports this one file
+   after Tailwind. Webfonts are loaded by ./fonts.ts (next/font). */
+@import './tokens/fig-tokens.css';
+@import './tokens/colors.css';
+@import './tokens/theme.css';
+@import './components.css';

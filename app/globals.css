@@ -1,0 +1,4 @@
+@import "tailwindcss";
+
+/* The whole design system. Delete theme/ and nothing else defines a token. */
+@import "../theme/index.css";
