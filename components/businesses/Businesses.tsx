@@ -21,6 +21,8 @@ import {
   MEMBER_TONE,
   NO_FILTERS,
   buildDetail,
+  listingName,
+  withListing,
   initials,
   type BizFilters,
   type BizRow,
@@ -121,19 +123,19 @@ export function Businesses({ demo }: { demo: Demo }) {
       flash(sel.name + ' is active again. The owner gets an email.');
     }
     if (dlg.kind === 'unpub') {
-      const name = det.branches.flatMap((br) => br.outlets).find((o) => o.id === dlg.id)?.name ?? '';
+      const name = listingName(det, dlg.id);
       patchDet(sel.id, sel, (d) => ({
         ...d,
-        branches: d.branches.map((br) => ({ ...br, outlets: br.outlets.map((o) => (o.id === dlg.id ? { ...o, listing: 'Unpublished', unpublishedBy: ME } : o)) })),
+        branches: withListing(d, dlg.id, 'Unpublished', ME),
         activity: [{ at: new Date().toISOString(), who: ME, what: 'Unpublished listing ' + name }, ...d.activity],
       }));
       flash(name + ' unpublished. Clients can no longer see it. The business gets an email.');
     }
     if (dlg.kind === 'repub') {
-      const name = det.branches.flatMap((br) => br.outlets).find((o) => o.id === dlg.id)?.name ?? '';
+      const name = listingName(det, dlg.id);
       patchDet(sel.id, sel, (d) => ({
         ...d,
-        branches: d.branches.map((br) => ({ ...br, outlets: br.outlets.map((o) => (o.id === dlg.id ? { ...o, listing: 'Published', unpublishedBy: undefined } : o)) })),
+        branches: withListing(d, dlg.id, 'Published'),
         activity: [{ at: new Date().toISOString(), who: ME, what: 'Published listing ' + name + ' again' }, ...d.activity],
       }));
       flash(name + ' is live again. The business gets an email.');
@@ -228,7 +230,7 @@ export function Businesses({ demo }: { demo: Demo }) {
   const ql = q.trim().toLowerCase();
   const rows = ready
     ? rowsAll
-        .filter((b) => (f.status === 'all' || b.status === f.status) && (f.plan === 'all' || b.plan === f.plan) && (f.type === 'all' || b.type === f.type) && (f.emirate === 'all' || b.emirate === f.emirate))
+        .filter((b) => (f.status === 'all' || b.status === f.status) && (f.plan === 'all' || b.plan === f.plan) && (f.type === 'all' || b.types.includes(f.type)) && (f.emirate === 'all' || b.emirate === f.emirate))
         .filter((b) => !ql || (b.name + b.owner + b.email + b.licence).toLowerCase().includes(ql))
     : [];
   const hasFilters = Object.values(f).some((v) => v !== 'all') || !!ql;
@@ -316,7 +318,7 @@ export function Businesses({ demo }: { demo: Demo }) {
                         </span>
                       </span>
                     </span>
-                    <span className={GREY}>{b.type}</span>
+                    <span className={GREY}>{b.types.join(', ')}</span>
                     <span className={GREY}>{b.emirate}</span>
                     <span className={GREY}>{b.plan}</span>
                     <span className="px-3">
@@ -424,7 +426,7 @@ export function Businesses({ demo }: { demo: Demo }) {
                       <span className="flex flex-col gap-0.5 px-3">
                         <span className="font-medium text-brand-purple">{m.business}</span>
                         <span className="text-xs text-muted">
-                          {b?.type ?? ''} · {b?.emirate ?? ''}
+                          {b?.types.join(', ') ?? ''} · {b?.emirate ?? ''}
                         </span>
                       </span>
                       <span className={GREY}>{m.role}</span>
@@ -461,7 +463,7 @@ export function Businesses({ demo }: { demo: Demo }) {
               <span className="flex flex-col gap-1">
                 <span className="font-display text-lg font-bold">{peek.name}</span>
                 <span className="text-[13px] text-muted">
-                  {peek.type} · {peek.emirate}
+                  {peek.types.join(', ')} · {peek.emirate}
                 </span>
               </span>
             </div>

@@ -106,7 +106,13 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
     if (dlg === 'approve') {
       update(sel.id, (x) => ({ ...x, status: 'approved', history: logEntry(x, 'Approved') }));
       bumpCount('queue', -1);
-      flash(sel.name + ' approved. The business can now publish its listing.');
+      flash(
+        sel.kind === 'business'
+          ? sel.name + ' approved. The business can now publish its listing.'
+          : sel.kind === 'branch'
+            ? sel.name + ' verified. Drafts on this branch can now be published.'
+            : sel.name + ' approved. It shows in the app as its own place.',
+      );
     }
     if (dlg === 'changes') {
       const keys = Object.keys(picks).filter((k) => picks[k]);
@@ -118,7 +124,7 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
     if (dlg === 'reject') {
       update(sel.id, (x) => ({ ...x, status: 'rejected', history: logEntry(x, 'Rejected: ' + reason, text.trim() || undefined, 'msg') }));
       bumpCount('queue', -1);
-      flash(sel.name + ' rejected.');
+      flash(sel.kind === 'business' ? sel.name + ' rejected for good. Its account is blocked and the owner gets an email.' : sel.name + ' rejected. The business gets an email.');
     }
     if (dlg === 'note') {
       if (!text.trim()) return setErr('Write the note first.');
@@ -264,7 +270,15 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
       : {
           approve: [`Approve ${name}?`, 'The business is verified and can publish its listing. The owner gets an email.', 'Approve', false, 440],
           changes: ['Request changes', 'Tick what needs fixing. The business sees these items flagged in the Business Portal.', 'Send request', false, 560],
-          reject: [`Reject ${name}?`, 'The business can’t publish and must start a new application. This can’t be undone.', 'Reject', true, 480],
+          reject: [
+            `Reject ${name}?`,
+            sel?.kind === 'business'
+              ? 'This rejects the business for good. Its email, Google or Apple account is blocked, so the owner needs a new account and verification starts over. This can’t be undone.'
+              : `This ${sel?.kind === 'branch' ? 'branch' : 'extra outlet'} can’t be published. ${sel?.parent ?? 'The business'} keeps its account and can apply again.`,
+            'Reject',
+            true,
+            480,
+          ],
           note: ['Add internal note', 'Only the Choices team sees internal notes.', 'Add note', false, 480],
         }[dlg as DetailAction] as [string, string, string, boolean, number];
 

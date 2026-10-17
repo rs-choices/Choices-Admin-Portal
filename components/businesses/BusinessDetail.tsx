@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Tabs } from '@/components/ui/Tabs';
 import { Timeline } from '@/components/ui/Timeline';
-import { BIZ_LABEL, BIZ_TONE, DETAIL_TABS, INVOICE_TONE, LISTING_TONE, activityDot, initials, type BizRow, type DetailTab } from '@/lib/businesses';
+import { BIZ_LABEL, BIZ_TONE, BRANCH_TONE, DETAIL_TABS, INVOICE_TONE, LISTING_TONE, PRICE_BAND_LABEL, activityDot, initials, type BizRow, type DetailTab } from '@/lib/businesses';
 import { aed, fmtDate, fmtDateTime, fmtNum } from '@/lib/format';
-import type { BusinessDetail as Detail, Member, Role } from '@/lib/types';
+import type { BusinessDetail as Detail, ListingStatus, Member, Role } from '@/lib/types';
 import { ME } from '@/lib/verification';
 
 const CARD = 'rounded-xl bg-white shadow-card';
@@ -52,7 +52,8 @@ export function BusinessDetail({
 }) {
   const trial = b.status === 'trial';
   const suspended = b.status === 'suspended';
-  const outlets = det.branches.flatMap((br) => br.outlets.map((o) => ({ ...o, branch: br.name + ' branch' })));
+  // A branch with one outlet is just the branch; a big branch's outlets are each a place.
+  const places = det.branches.flatMap((br) => br.outlets.map((o) => ({ ...o, branch: br.name + ' branch', single: br.outlets.length === 1 })));
   const team = members.filter((m) => m.bid === b.id);
 
   return (
@@ -71,7 +72,7 @@ export function BusinessDetail({
             </Badge>
           </div>
           <span className="text-sm text-muted">
-            {b.type} · {b.emirate} · {b.plan} plan · Joined {fmtDate(b.joined)} · {b.licence}
+            {b.types.join(', ')} · {b.emirate} · {b.plan} plan · Joined {fmtDate(b.joined)} · {b.licence}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -139,14 +140,23 @@ export function BusinessDetail({
         <div className="flex flex-col gap-4">
           {det.branches.map((br) => (
             <section key={br.name} className={`${CARD} flex flex-col p-5`}>
-              <div className="flex items-baseline justify-between gap-3 pb-2">
-                <h2 className="m-0 font-display text-[17px] font-semibold">{br.name} branch</h2>
-                <span className="text-[13px] text-muted">{br.area}</span>
+              <div className="flex flex-wrap items-center justify-between gap-3 pb-2">
+                <span className="flex flex-col gap-0.5">
+                  <h2 className="m-0 font-display text-[17px] font-semibold">{br.name} branch</h2>
+                  <span className="text-[13px] text-muted">{br.area}</span>
+                </span>
+                <Badge tone={BRANCH_TONE[br.status]} dot>
+                  {br.status}
+                </Badge>
               </div>
+              {br.outlets.length > 1 && <span className="pb-1 text-xs text-muted">{br.outlets.length} places at this branch</span>}
               {br.outlets.map((o) => (
                 <div key={o.id} className={`${ROW} flex flex-wrap items-center gap-3 py-2.5`}>
-                  <span className="flex-1 font-medium">{o.name}</span>
+                  <span className="flex-1 font-medium">{br.outlets.length === 1 ? 'Shown in the app as one place' : o.name}</span>
                   <Badge tone="brand">{o.type}</Badge>
+                  <span className="text-[13px] text-muted" title={PRICE_BAND_LABEL[o.priceBand] + ' per person'}>
+                    {o.priceBand}
+                  </span>
                   <Badge tone={LISTING_TONE[o.listing]}>{o.listing}</Badge>
                 </div>
               ))}
@@ -156,32 +166,36 @@ export function BusinessDetail({
       )}
 
       {tab === 'listings' && (
-        <section className={`${CARD} px-5 py-2`}>
-          {outlets.map((o, i) => (
-            <div key={o.id} className={`flex min-h-16 flex-wrap items-center gap-3.5 text-sm ${i ? 'border-t border-subtle' : ''}`}>
-              <span className="grid size-12 shrink-0 place-items-center rounded-[12px] bg-surface-muted text-muted">
-                <Icon name="image" size={20} />
-              </span>
-              <span className="flex flex-[1_1_200px] flex-col gap-0.5">
-                <span className="font-semibold">{o.name}</span>
-                <span className="text-xs text-muted">
-                  {o.type} · {o.branch}
+        <div className="flex flex-col gap-4">
+          {places.map((o) => (
+            <section key={o.id} className={`${CARD} px-5 py-2`}>
+              <div className="flex min-h-16 flex-wrap items-center gap-3.5 text-sm">
+                <span className="grid size-12 shrink-0 place-items-center rounded-[12px] bg-surface-muted text-muted">
+                  <Icon name="image" size={20} />
                 </span>
-              </span>
-              <Badge tone={LISTING_TONE[o.listing]}>{o.listing}</Badge>
-              {o.listing === 'Published' && (
-                <Button variant="outline" size="sm" onClick={() => onUnpublish(o.id)}>
-                  Unpublish
-                </Button>
-              )}
-              {o.listing === 'Unpublished' && o.unpublishedBy === ME && (
-                <Button size="sm" onClick={() => onRepublish(o.id)}>
-                  Publish again
-                </Button>
-              )}
-            </div>
+                <span className="flex flex-[1_1_200px] flex-col gap-0.5">
+                  <span className="font-semibold">{o.name}</span>
+                  <span className="text-xs text-muted">
+                    Place · {o.type} · {o.priceBand} · {o.branch}
+                  </span>
+                </span>
+                <ListingActions status={o.listing} unpublishedBy={o.unpublishedBy} onUnpublish={() => onUnpublish(o.id)} onRepublish={() => onRepublish(o.id)} />
+              </div>
+              {o.listings.map((l) => (
+                <div key={l.id} className="flex min-h-14 flex-wrap items-center gap-3.5 border-t border-subtle pl-[62px] text-sm">
+                  <span className="flex flex-[1_1_200px] flex-col gap-0.5">
+                    <span className="font-semibold">{l.title}</span>
+                    <span className="text-xs text-muted">
+                      {l.kind} at {o.single ? o.branch : o.name} · {l.when}
+                    </span>
+                  </span>
+                  <ListingActions status={l.listing} unpublishedBy={l.unpublishedBy} onUnpublish={() => onUnpublish(l.id)} onRepublish={() => onRepublish(l.id)} />
+                </div>
+              ))}
+              {o.listings.length === 0 && <div className="border-t border-subtle py-3 pl-[62px] text-xs text-muted">No events or activities listed on this place.</div>}
+            </section>
           ))}
-        </section>
+        </div>
       )}
 
       {tab === 'team' && (
@@ -278,6 +292,25 @@ export function BusinessDetail({
         <section className={`${CARD} p-5`}>
           <Timeline items={det.activity.map((h, k) => ({ key: h.at + k, what: h.what, meta: h.who + ' · ' + fmtDateTime(h.at), dot: activityDot(h) }))} />
         </section>
+      )}
+    </>
+  );
+}
+
+/** Status badge, plus unpublish or publish again for one listing (place, event or activity). */
+function ListingActions({ status, unpublishedBy, onUnpublish, onRepublish }: { status: ListingStatus; unpublishedBy?: string; onUnpublish: () => void; onRepublish: () => void }) {
+  return (
+    <>
+      <Badge tone={LISTING_TONE[status]}>{status}</Badge>
+      {status === 'Published' && (
+        <Button variant="outline" size="sm" onClick={onUnpublish}>
+          Unpublish
+        </Button>
+      )}
+      {status === 'Unpublished' && unpublishedBy === ME && (
+        <Button size="sm" onClick={onRepublish}>
+          Publish again
+        </Button>
       )}
     </>
   );

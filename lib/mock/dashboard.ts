@@ -5,9 +5,9 @@ import type { Attention, Conversion, Kpis, Range, Series } from '@/lib/types';
 export const NOW = '2026-10-16T10:30:00+04:00';
 
 export const KPIS: Record<Range, Kpis> = {
-  '7d': { newClients: 1284, newBusinesses: 37, queue: 5, tickets: 23, reports: 10, trials: 62, mrr: 184250, bookings: 3912, d: { newClients: 8.2, newBusinesses: -4.1, mrr: 3.6, bookings: 11.4 } },
-  '30d': { newClients: 5210, newBusinesses: 141, queue: 5, tickets: 23, reports: 10, trials: 62, mrr: 184250, bookings: 15880, d: { newClients: 5.4, newBusinesses: 2.2, mrr: 9.8, bookings: 7.1 } },
-  '90d': { newClients: 14930, newBusinesses: 402, queue: 5, tickets: 23, reports: 10, trials: 62, mrr: 184250, bookings: 44210, d: { newClients: 18.9, newBusinesses: 12.0, mrr: 27.5, bookings: 21.3 } },
+  '7d': { newClients: 1284, newBusinesses: 37, queue: 9, tickets: 23, reports: 11, trials: 62, mrr: 184250, bookings: 3912, d: { newClients: 8.2, newBusinesses: -4.1, mrr: 3.6, bookings: 11.4 } },
+  '30d': { newClients: 5210, newBusinesses: 141, queue: 9, tickets: 23, reports: 11, trials: 62, mrr: 184250, bookings: 15880, d: { newClients: 5.4, newBusinesses: 2.2, mrr: 9.8, bookings: 7.1 } },
+  '90d': { newClients: 14930, newBusinesses: 402, queue: 9, tickets: 23, reports: 11, trials: 62, mrr: 184250, bookings: 44210, d: { newClients: 18.9, newBusinesses: 12.0, mrr: 27.5, bookings: 21.3 } },
 };
 
 export const SERIES: Record<Range, Series> = {
