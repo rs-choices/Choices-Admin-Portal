@@ -265,16 +265,6 @@ export interface ReportedClient {
   history: HistoryEntry[];
 }
 
-export interface Offer {
-  id: string;
-  business: string;
-  title: string;
-  validity: string;
-  price: string;
-  submitted: string;
-  terms: string;
-}
-
 // --- Support ---
 
 export type TicketStatus = 'open' | 'waiting' | 'resolved';
