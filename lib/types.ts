@@ -176,7 +176,8 @@ export type PlanName = 'Starter' | 'Growth' | 'Enterprise';
 export interface Business {
   id: string;
   name: string;
-  type: BizType;
+  /** The types of the business's places. A type belongs to a place (outlet), not the business. */
+  types: BizType[];
   emirate: Emirate;
   status: BusinessStatus;
   /** `—` while the business is still pending. */
@@ -199,10 +200,39 @@ export interface Business {
 }
 
 export type ListingStatus = 'Published' | 'Draft' | 'Unpublished';
+/** How expensive a place is, per person: $ under AED 50, $$ AED 50–150, $$$ AED 150+. */
+export type PriceBand = '$' | '$$' | '$$$';
+export type BranchStatus = 'Verified' | 'Waiting for verification';
+
+/** An event or activity listed on top of a place (its own listing). */
+export interface PlaceSubListing {
+  id: string;
+  kind: 'Event' | 'Activity';
+  title: string;
+  /** Date and time for an event, duration for an activity. */
+  when: string;
+  listing: ListingStatus;
+  /** Admin who unpublished it; only they can publish it again. */
+  unpublishedBy?: string;
+}
+
+/** A place: the branch's default outlet, or one outlet of a big branch. */
+export interface Place {
+  id: string;
+  name: string;
+  type: BizType;
+  priceBand: PriceBand;
+  listing: ListingStatus;
+  /** Admin who unpublished it; only they can publish it again. */
+  unpublishedBy?: string;
+  /** Events and activities listed on top of this place. */
+  listings: PlaceSubListing[];
+}
 export type MemberRole = 'Owner' | 'Manager' | 'Staff';
 
 export interface BusinessDetail {
-  branches: { name: string; area: string; outlets: { id: string; name: string; type: BizType; listing: ListingStatus; /** Admin who unpublished it; only they can publish it again. */ unpublishedBy?: string }[] }[];
+  /** A branch with one outlet shows as one place; a big branch shows each outlet as its own place. */
+  branches: { name: string; area: string; status: BranchStatus; outlets: Place[] }[];
   team: { name: string; email: string; role: MemberRole; last: string }[];
   invoices: { id: string; date: string; amount: number; status: InvoiceStatus }[];
   reviews: { author: string; rating: number; date: string; text: string; status: 'Visible' | 'Reported' }[];
@@ -242,6 +272,8 @@ export interface ReportedListing {
   id: string;
   kind: 'Photo' | 'Listing';
   business: string;
+  /** What was reported: a place, an event or an activity, and which one. */
+  target: { kind: 'Place' | 'Event' | 'Activity'; name: string };
   reporter: string;
   reportedAt: string;
   reason: string;

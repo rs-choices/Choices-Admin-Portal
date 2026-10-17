@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Icon } from '@/components/ui/Icon';
 import { ago, fmtDateTime, hoursSince } from '@/lib/format';
 import type { Verification } from '@/lib/types';
-import { STATUS_LABEL, STATUS_TONE, isOpen } from '@/lib/verification';
+import { KIND_LABEL, STATUS_LABEL, STATUS_TONE, isOpen } from '@/lib/verification';
 
 const COLS = 'grid grid-cols-[minmax(220px,2.2fr)_90px_150px_100px_140px_170px_36px] items-center';
 
@@ -59,7 +59,7 @@ export function QueueTable({
                 >
                   <span className="flex min-w-0 flex-col gap-0.5 px-5 py-2">
                     <span className="font-semibold">{v.name}</span>
-                    <span className="text-xs text-muted">{v.parent ? 'Part of ' + v.parent : v.licence + ' · ' + v.emirate}</span>
+                    <span className="text-xs text-muted">{v.parent ? KIND_LABEL[v.kind] + ' · part of ' + v.parent : v.licence + ' · ' + v.emirate}</span>
                   </span>
                   <span className="px-3 text-[var(--pure-black-variable-300)]">{v.type}</span>
                   <span className="whitespace-nowrap px-3 text-[var(--pure-black-variable-300)]">{fmtDateTime(v.submitted)}</span>

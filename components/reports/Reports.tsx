@@ -31,7 +31,7 @@ const STATUS: Record<ModStatus, [string, Tone]> = {
 
 const reporterName = (x: ModItem) => (x.reporter ?? '').replace('Client · ', '');
 const titleOf = (x: ModItem) =>
-  x.kind === 'review' ? x.author + ' on ' + x.business : x.kind === 'client' ? (x.client ?? '') + ' · reported by ' + x.business : x.sub + ' · ' + x.business;
+  x.kind === 'review' ? x.author + ' on ' + x.business : x.kind === 'client' ? (x.client ?? '') + ' · reported by ' + x.business : x.sub + (x.target ? ' · ' + x.target.kind.toLowerCase() + ' ' + x.target.name : '') + ' · ' + x.business;
 const dotOf = (h: HistoryEntry) =>
   /Removed|Suspended/.test(h.what)
     ? 'var(--error-500)'
@@ -269,7 +269,7 @@ export function Reports({ demo }: { demo: Demo }) {
               <div className="flex flex-wrap items-start gap-3">
                 <div className="flex flex-[1_1_260px] flex-col gap-1.5">
                   <span className="text-xs font-semibold uppercase tracking-[.08em] text-muted">
-                    {isReview ? 'Review on ' + it.business : it.kind === 'client' ? 'Client report from ' + it.business : 'Reported ' + it.sub.toLowerCase() + ' · ' + it.business}
+                    {isReview ? 'Review on ' + it.business : it.kind === 'client' ? 'Client report from ' + it.business : 'Reported ' + it.sub.toLowerCase() + (it.target ? ' of ' + it.target.kind.toLowerCase() + ' ' + it.target.name : '') + ' · ' + it.business}
                   </span>
                   <h2 className="m-0 font-display text-[22px] font-bold leading-[1.3]">{it.reason}</h2>
                 </div>
@@ -319,6 +319,7 @@ export function Reports({ demo }: { demo: Demo }) {
               <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
                 {(
                   [
+                      ...(it.target ? [['Listing', it.target.kind + ': ' + it.target.name]] : []),
                       ['Reported by', isReview || it.kind === 'client' ? it.business + ' (business)' : it.reporter ?? ''],
                       ['Reason', it.reason ?? ''],
                       ['Reported', fmtDateTime(it.at) + ' · ' + ago(it.at) + ' ago'],

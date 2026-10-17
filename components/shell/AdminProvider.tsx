@@ -53,7 +53,7 @@ const Ctx = createContext<AdminState | null>(null);
 
 export function AdminProvider({ children }: { children: ReactNode }) {
   const role = useSyncExternalStore(subscribe, readRole, () => 'super' as Role);
-  const [counts, setCounts] = useState<Record<CountKey, number>>({ queue: 5, reports: 10, tickets: 23 });
+  const [counts, setCounts] = useState<Record<CountKey, number>>({ queue: 9, reports: 11, tickets: 23 });
   const [toast, setToast] = useState('');
   const [toastErr, setToastErr] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);

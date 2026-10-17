@@ -12,9 +12,10 @@ import { ChipGroup } from '@/components/ui/ChipGroup';
 import { Dialog, FIELD } from '@/components/ui/Dialog';
 import { FilterField } from '@/components/ui/FilterField';
 import { Icon } from '@/components/ui/Icon';
+import { PRICE_BAND_LABEL } from '@/lib/businesses';
 import { getClients } from '@/lib/data/clients';
 import { fmtDate } from '@/lib/format';
-import type { Client, Tone } from '@/lib/types';
+import type { Client, PriceBand, Tone } from '@/lib/types';
 
 export type Demo = 'live' | 'loading' | 'empty' | 'error';
 type StatusFilter = 'all' | Client['status'];
@@ -115,7 +116,7 @@ export function Clients({ demo }: { demo: Demo }) {
     const prefRows: [string, string[]][] = [
       ['Food', sel.prefs.food.length ? sel.prefs.food : ['Not set']],
       ['Activities', sel.prefs.activities.length ? sel.prefs.activities : ['Not set']],
-      ['Budget', [sel.prefs.budget]],
+      ['Budget', [sel.prefs.budget in PRICE_BAND_LABEL ? sel.prefs.budget + ' · ' + PRICE_BAND_LABEL[sel.prefs.budget as PriceBand] : sel.prefs.budget]],
       ['Must-haves', sel.prefs.tags.length ? sel.prefs.tags : ['None']],
     ];
     const [dTitle, dDesc, dCta, danger] =

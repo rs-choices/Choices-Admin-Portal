@@ -31,6 +31,8 @@ export type ModItem = {
   note?: string;
   // listings
   reporter?: string;
+  /** What a listing report is about: a place, an event or an activity, and which one. */
+  target?: { kind: 'Place' | 'Event' | 'Activity'; name: string };
   // clients
   cid?: string;
   client?: string;

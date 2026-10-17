@@ -13,12 +13,14 @@ export const REPORTED_REVIEWS: ReportedReview[] = [
 ];
 
 export const REPORTED_LISTINGS: ReportedListing[] = [
-  { id: 'l1', kind: 'Photo', business: 'Shawarma Al Reem', reporter: 'Client · Aisha Rahman', reportedAt: '2026-10-15T12:30:00+04:00', reason: 'Photo is from another business', text: 'Cover photo shows a restaurant interior in Beirut, watermark visible.',
+  { id: 'l1', kind: 'Photo', business: 'Shawarma Al Reem', target: { kind: 'Place', name: 'Shawarma Al Reem · Khalidiya' }, reporter: 'Client · Aisha Rahman', reportedAt: '2026-10-15T12:30:00+04:00', reason: 'Photo is from another business', text: 'Cover photo shows a restaurant interior in Beirut, watermark visible.',
     history: [{ at: '2026-10-15T12:30:00+04:00', who: 'Aisha Rahman', what: 'Reported photo' }] },
-  { id: 'l2', kind: 'Listing', business: 'Mleiha Stargazing Camp', reporter: 'Client · Tom Baker', reportedAt: '2026-10-14T18:00:00+04:00', reason: 'Business appears closed', text: 'Listing says open nightly. Phone unreachable for 2 weeks.',
+  { id: 'l2', kind: 'Listing', business: 'Mleiha Stargazing Camp', target: { kind: 'Activity', name: 'Night stargazing tour' }, reporter: 'Client · Tom Baker', reportedAt: '2026-10-14T18:00:00+04:00', reason: 'Business appears closed', text: 'Listing says open nightly. Phone unreachable for 2 weeks.',
     history: [{ at: '2026-10-14T18:00:00+04:00', who: 'Tom Baker', what: 'Reported listing' }] },
-  { id: 'l3', kind: 'Photo', business: 'Tawa Indian Bistro', reporter: 'Client · Sam Lee', reportedAt: '2026-10-16T08:05:00+04:00', reason: 'Inappropriate content', text: 'Gallery photo 6 shows a guest without consent.',
+  { id: 'l3', kind: 'Photo', business: 'Tawa Indian Bistro', target: { kind: 'Place', name: 'Tawa Indian Bistro · JLT' }, reporter: 'Client · Sam Lee', reportedAt: '2026-10-16T08:05:00+04:00', reason: 'Inappropriate content', text: 'Gallery photo 6 shows a guest without consent.',
     history: [{ at: '2026-10-16T08:05:00+04:00', who: 'Sam Lee', what: 'Reported photo' }] },
+  { id: 'l4', kind: 'Listing', business: 'Corniche Comedy Club', target: { kind: 'Event', name: 'Open mic Fridays' }, reporter: 'Client · Hind Al Qassimi', reportedAt: '2026-10-16T21:40:00+04:00', reason: 'Event did not happen', text: 'Came at 9 PM as listed, the club was closed. The event still shows for next Friday.',
+    history: [{ at: '2026-10-16T21:40:00+04:00', who: 'Hind Al Qassimi', what: 'Reported event' }] },
 ];
 
 // Clients reported by businesses. Not in the Claude Design prototype: added
