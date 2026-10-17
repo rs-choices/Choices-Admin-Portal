@@ -34,7 +34,6 @@ export function BusinessDetail({
   onTab,
   onSuspend,
   onUnsuspend,
-  onExtend,
   onUnpublish,
   onRepublish,
   onRefund,
@@ -47,7 +46,6 @@ export function BusinessDetail({
   onTab: (t: DetailTab) => void;
   onSuspend: () => void;
   onUnsuspend: () => void;
-  onExtend: () => void;
   onUnpublish: (outletId: string) => void;
   onRepublish: (outletId: string) => void;
   onRefund: (invoiceId: string) => void;
@@ -77,11 +75,6 @@ export function BusinessDetail({
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
-          {trial && (
-            <Button variant="outline" size="sm" onClick={onExtend}>
-              Extend trial
-            </Button>
-          )}
           {!suspended && b.status !== 'pending' && (
             <button
               type="button"
@@ -107,7 +100,7 @@ export function BusinessDetail({
       {b.paymentFailed && (
         <div className="flex items-center gap-2.5 rounded-[14px] bg-[var(--warning-opacity-10)] px-4 py-3 text-sm text-[var(--warning-variable-700)]">
           <Icon name="credit-card" size={18} />
-          Last payment failed. The card is retried automatically in 2 days.
+          Last payment failed. Retry it from Billing once the business updates its card.
         </div>
       )}
 

@@ -15,14 +15,14 @@ export const TICKETS: Ticket[] = [
     ] },
   { id: 'T-2286', from: 'Tawa Indian Bistro', fromKind: 'business', contact: 'Arjun Mehta', subject: 'Menu photos not updating', category: 'Listing', status: 'open', priority: 'normal', assignee: null, updated: '2026-10-15T13:05:00+04:00',
     thread: [{ who: 'Arjun Mehta', side: 'them', at: '2026-10-15T13:05:00+04:00', text: 'We replaced 6 menu photos yesterday but the app still shows the old ones.' }] },
-  { id: 'T-2284', from: 'Omar Al Suwaidi', fromKind: 'client', contact: '+971 50 214 8830', subject: 'Why was my review reported', category: 'Client help', status: 'open', priority: 'low', assignee: 'Noura Khalifa', updated: '2026-10-15T11:00:00+04:00',
-    thread: [{ who: 'Omar Al Suwaidi', side: 'them', at: '2026-10-15T11:00:00+04:00', text: 'I got a notice that my review of Al Fanar was reported. It was a real visit.' }] },
+  { id: 'T-2284', from: 'Omar Al Suwaidi', fromKind: 'client', contact: 'omar.suwaidi@gmail.com', subject: 'My review disappeared', category: 'Client help', status: 'open', priority: 'low', assignee: 'Noura Khalifa', updated: '2026-10-15T11:00:00+04:00',
+    thread: [{ who: 'Omar Al Suwaidi', side: 'them', at: '2026-10-15T11:00:00+04:00', text: 'My review of Al Fanar is not showing any more. It was a real visit.' }] },
   { id: 'T-2281', from: 'Wild Wadi Kayak Co.', fromKind: 'business', contact: 'Priya Nair', subject: 'App crashes on bookings page', category: 'Technical', status: 'open', priority: 'high', assignee: null, updated: '2026-10-14T16:45:00+04:00',
     thread: [{ who: 'Priya Nair', side: 'them', at: '2026-10-14T16:45:00+04:00', text: 'Business Portal freezes when I open bookings for next week on Safari.' }] },
   { id: 'T-2279', from: 'Corniche Comedy Club', fromKind: 'business', contact: 'Lina Saab', subject: 'Change plan to Growth', category: 'Billing', status: 'resolved', priority: 'normal', assignee: 'Sara Al Mansoori', updated: '2026-10-13T10:00:00+04:00',
     thread: [{ who: 'Lina Saab', side: 'them', at: '2026-10-12T15:00:00+04:00', text: 'How do we move to Growth?' }, { who: 'Sara Al Mansoori', side: 'us', at: '2026-10-13T10:00:00+04:00', text: 'Done. Growth starts on your next invoice, 1 November.' }] },
-  { id: 'T-2275', from: 'Aisha Rahman', fromKind: 'client', contact: 'aisha.r@outlook.com', subject: 'Delete my account', category: 'Client help', status: 'waiting', priority: 'normal', assignee: 'Rami Haddad', updated: '2026-10-12T09:30:00+04:00',
-    thread: [{ who: 'Aisha Rahman', side: 'them', at: '2026-10-11T20:00:00+04:00', text: 'Please delete my account and data.' }, { who: 'Rami Haddad', side: 'us', at: '2026-10-12T09:30:00+04:00', text: 'Can you confirm the email on the account so we can verify it is you?' }] },
+  { id: 'T-2275', from: 'Aisha Rahman', fromKind: 'client', contact: 'aisha.r@outlook.com', subject: 'Delete my account', category: 'Client help', status: 'resolved', priority: 'normal', assignee: 'Rami Haddad', updated: '2026-10-12T09:30:00+04:00',
+    thread: [{ who: 'Aisha Rahman', side: 'them', at: '2026-10-11T20:00:00+04:00', text: 'Please delete my account and data.' }, { who: 'Rami Haddad', side: 'us', at: '2026-10-12T09:30:00+04:00', text: 'Answered by email: open Settings › Delete account in the app and confirm with the code we send you. Your data is deleted with the account.' }] },
 ];
 
 export const SAVED_REPLIES: SavedReply[] = [
