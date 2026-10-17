@@ -105,7 +105,7 @@ export function Clients({ demo }: { demo: Demo }) {
       : sel.status === 'suspended'
         ? 'Suspended: ' + sel.suspendReason + '. Their reviews are hidden.'
         : sel.deletionRequested
-          ? 'This client asked for account deletion in T-2275. Clients delete their own account in the app, under Settings › Delete account. Reply in the ticket with those steps.'
+          ? 'This client asked for account deletion in T-2275. Clients delete their own account in the app, under Settings › Delete account. Email them those steps from the ticket.'
           : '';
     const bannerStyle = del
       ? { background: 'var(--color-surface-muted)', color: 'var(--pure-black-variable-400)' }

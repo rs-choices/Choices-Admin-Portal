@@ -20,7 +20,6 @@ import {
   FILTER_DEFS,
   MEMBER_TONE,
   NO_FILTERS,
-  addDays,
   buildDetail,
   initials,
   type BizFilters,
@@ -34,7 +33,7 @@ import { ME } from '@/lib/verification';
 import { BusinessDetail } from './BusinessDetail';
 
 export type Demo = 'live' | 'loading' | 'empty' | 'error';
-type Dlg = { kind: 'suspend' | 'unsuspend' | 'extend' } | { kind: 'unpub'; id: string } | { kind: 'repub'; id: string } | { kind: 'refund'; id: string } | null;
+type Dlg = { kind: 'suspend' | 'unsuspend' } | { kind: 'unpub'; id: string } | { kind: 'repub'; id: string } | { kind: 'refund'; id: string } | null;
 
 const BIZ_COLS = 'grid grid-cols-[minmax(220px,2fr)_90px_110px_110px_110px_110px_120px_36px] items-center';
 const MEM_COLS = 'grid grid-cols-[minmax(220px,1.6fr)_minmax(180px,1.3fr)_100px_110px_120px_120px_36px] items-center';
@@ -64,7 +63,6 @@ export function Businesses({ demo }: { demo: Demo }) {
 
   const [dlg, setDlg] = useState<Dlg>(null);
   const [text, setText] = useState('');
-  const [days, setDays] = useState(14);
   const [err, setErr] = useState('');
 
   const fetchData = useCallback(() => {
@@ -122,12 +120,6 @@ export function Businesses({ demo }: { demo: Demo }) {
       act(sel.id, sel, 'Unsuspended');
       flash(sel.name + ' is active again. The owner gets an email.');
     }
-    if (dlg.kind === 'extend' && sel.trialEnds) {
-      const iso = addDays(sel.trialEnds, days);
-      setB(sel.id, { trialEnds: iso });
-      act(sel.id, sel, 'Extended trial by ' + days + ' days to ' + fmtDate(iso));
-      flash('Trial extended to ' + fmtDate(iso) + '.');
-    }
     if (dlg.kind === 'unpub') {
       const name = det.branches.flatMap((br) => br.outlets).find((o) => o.id === dlg.id)?.name ?? '';
       patchDet(sel.id, sel, (d) => ({
@@ -164,7 +156,6 @@ export function Businesses({ demo }: { demo: Demo }) {
       {
         suspend: ['Suspend ' + sel.name + '?', 'Listings disappear from the client app, open bookings stay valid, and the team is signed out.', 'Suspend', true],
         unsuspend: ['Unsuspend ' + sel.name + '?', 'Listings go back live and the team can sign in again.', 'Unsuspend', false],
-        extend: ['Extend trial', 'Current trial ends ' + (sel.trialEnds ? fmtDate(sel.trialEnds) : '') + '. The business gets an email with the new date.', 'Extend trial', false],
         unpub: ['Unpublish this listing?', 'Clients stop seeing it straight away. The business gets an email, and you can publish it again later.', 'Unpublish', true],
         repub: ['Publish this listing again?', 'Clients can see it straight away. The business gets an email.', 'Publish again', false],
         refund: [
@@ -191,20 +182,6 @@ export function Businesses({ demo }: { demo: Demo }) {
           </>
         }
       >
-        {dlg.kind === 'extend' && (
-          <>
-            <div className="flex flex-wrap gap-2">
-              {[7, 14, 30, 60].map((n) => (
-                <button key={n} type="button" className="ds-chip ds-chip-sm" aria-pressed={days === n} onClick={() => setDays(n)}>
-                  {n} days
-                </button>
-              ))}
-            </div>
-            <span className="text-sm">
-              New trial end: <strong>{sel.trialEnds ? fmtDate(addDays(sel.trialEnds, days)) : ''}</strong>
-            </span>
-          </>
-        )}
         {dlg.kind === 'suspend' && (
           <label className="flex flex-col gap-2 text-sm">
             Reason (required, shown to the business)
@@ -238,7 +215,6 @@ export function Businesses({ demo }: { demo: Demo }) {
           onTab={(t) => router.replace('/businesses?id=' + sel.id + (t === 'overview' ? '' : '&tab=' + t), { scroll: false })}
           onSuspend={() => openDlg({ kind: 'suspend' })}
           onUnsuspend={() => openDlg({ kind: 'unsuspend' })}
-          onExtend={() => openDlg({ kind: 'extend' })}
           onUnpublish={(id) => openDlg({ kind: 'unpub', id })}
           onRepublish={(id) => openDlg({ kind: 'repub', id })}
           onRefund={(id) => openDlg({ kind: 'refund', id })}

@@ -1,5 +1,5 @@
 // Prototype mock data, copied from the Claude Design project's lib/mock-data*.js.
-import type { ReportedClient, Offer, ReportedListing, ReportedReview } from '@/lib/types';
+import type { ReportedClient, ReportedListing, ReportedReview } from '@/lib/types';
 
 export const REPORTED_REVIEWS: ReportedReview[] = [
   { id: 'r1', business: 'Al Fanar Restaurant', author: 'Omar Al Suwaidi', authorWarnings: 0, rating: 2, posted: '2026-10-11', reportedAt: '2026-10-15T03:20:00+04:00', reason: 'False claim', note: 'This guest never had a booking with us on that date.', text: 'Waited 40 minutes for a table we had booked. Staff were rude and the food came cold.',
@@ -19,12 +19,6 @@ export const REPORTED_LISTINGS: ReportedListing[] = [
     history: [{ at: '2026-10-14T18:00:00+04:00', who: 'Tom Baker', what: 'Reported listing' }] },
   { id: 'l3', kind: 'Photo', business: 'Tawa Indian Bistro', reporter: 'Client · Sam Lee', reportedAt: '2026-10-16T08:05:00+04:00', reason: 'Inappropriate content', text: 'Gallery photo 6 shows a guest without consent.',
     history: [{ at: '2026-10-16T08:05:00+04:00', who: 'Sam Lee', what: 'Reported photo' }] },
-];
-
-export const OFFERS: Offer[] = [
-  { id: 'f1', business: 'Zaatar w Zeit Kitchen', title: '2-for-1 manakeesh before 11 am', validity: '20 Oct – 30 Nov 2026', price: 'AED 18', submitted: '2026-10-15T10:00:00+04:00', terms: 'Dine-in only. Weekdays.' },
-  { id: 'f2', business: 'Desert Rush Safaris', title: '70% off evening safari', validity: '18 Oct – 18 Nov 2026', price: 'AED 89 (was AED 299)', submitted: '2026-10-15T16:20:00+04:00', terms: 'Subject to availability.' },
-  { id: 'f3', business: 'Corniche Comedy Club', title: 'Free mocktail with Thursday tickets', validity: '23 Oct – 25 Dec 2026', price: 'AED 120', submitted: '2026-10-16T09:10:00+04:00', terms: 'One per ticket.' },
 ];
 
 // Clients reported by businesses. Not in the Claude Design prototype: added

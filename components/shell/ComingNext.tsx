@@ -25,8 +25,8 @@ const PLANNED: Partial<Record<SectionId, string[]>> = {
     'Suspend, unsuspend, export their data',
   ],
   reports: [
-    'Reported reviews, reported listings and photos, offers waiting for review',
-    'Keep, remove, warn the author, approve or reject an offer',
+    'Reported reviews, reported listings and photos, reported clients',
+    'Keep, remove, warn the author, ask the business to fix it',
   ],
   support: [
     'One inbox for business tickets and client help messages',

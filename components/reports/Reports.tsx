@@ -114,7 +114,7 @@ export function Reports({ demo }: { demo: Demo }) {
       const to = recipients(it).find((r) => r.id === msgTo) ?? recipients(it)[0];
       const name = to.label.replace(/ \(.*\)$/, '');
       patch(it.id, (y) => ({ ...y, history: [...y.history, { at: new Date().toISOString(), who: ME, what: 'Message sent to ' + name, body: note, kind: 'msg' }] }));
-      flash('Message sent to ' + name + ' by email and in the app.');
+      flash('Message sent to ' + name + ' in the Business Portal.');
     }
     if (dlg === 'warnClient') {
       if (!note) return setErr('Write the warning the client will see.');
@@ -155,7 +155,7 @@ export function Reports({ demo }: { demo: Demo }) {
       ],
       message: [
         'Send a message about this report',
-        'It goes by email and as a notice in the app, and is saved in the report history.',
+        'It goes to the business in the Business Portal (Messages and the bell) and is saved in the report history.',
         'Send message',
         'Message',
         'Can you send the booking reference so we can check this?',

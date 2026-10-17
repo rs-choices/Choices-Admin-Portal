@@ -32,7 +32,7 @@ const CATEGORIES: [string, string][] = [
 const INLINE_SELECT = 'h-9 min-w-0 max-w-full rounded-[14px] border-none bg-surface-muted px-3 text-[13px] font-medium text-ink';
 
 const statusLabel = (t: Ticket) =>
-  t.status === 'open' ? 'Open' : t.status === 'resolved' ? 'Resolved' : t.fromKind === 'business' ? 'Waiting on business' : 'Waiting on client';
+  t.status === 'open' ? 'Open' : t.status === 'resolved' ? 'Resolved' : 'Waiting on business';
 
 export function Support({ demo }: { demo: Demo }) {
   const initialId = useSearchParams().get('id');
@@ -102,9 +102,25 @@ export function Support({ demo }: { demo: Demo }) {
     const body = draft.trim();
     if (!body) return flash(note ? 'Write the note first.' : 'Write a reply first.');
     const now = new Date().toISOString();
-    patch(t.id, (x) => ({ ...x, status: note ? x.status : 'waiting', updated: now, thread: [...x.thread, { who: ME, side: note ? 'note' : 'us', at: now, text: body }] }));
+    // Clients never see answers in the app: their answer goes by email and
+    // closes the request. Businesses read replies in the Business Portal.
+    const client = !note && t.fromKind === 'client';
+    const status = note ? t.status : client ? 'resolved' : 'waiting';
+    patch(t.id, (x) => ({
+      ...x,
+      status,
+      updated: now,
+      thread: [...x.thread, { who: ME, side: note ? 'note' : 'us', at: now, text: body }, ...(client ? [{ who: ME, side: 'sys' as const, at: now, text: 'Answered by email and closed' }] : [])],
+    }));
+    if (client && t.status !== 'resolved') bumpCount('tickets', -1);
     setDraft('');
-    flash(note ? 'Note added to ' + t.id + '.' : 'Reply sent to ' + t.contact + '. They get a notification in the app.');
+    flash(
+      note
+        ? 'Note added to ' + t.id + '.'
+        : client
+          ? 'Answer emailed to ' + t.contact + '. The request is closed.'
+          : 'Reply sent to ' + t.from + '. They see it in the Business Portal.',
+    );
   };
 
   const chips: { id: StatusFilter; label: string }[] = [
@@ -365,10 +381,12 @@ export function Support({ demo }: { demo: Demo }) {
                   <span className="text-xs text-muted">
                     {note
                       ? 'Internal notes never reach the ' + (t.fromKind === 'client' ? 'client' : 'business') + '.'
-                      : 'Sending sets the ticket to ' + (t.fromKind === 'client' ? 'Waiting on client' : 'Waiting on business') + '.'}
+                      : t.fromKind === 'client'
+                        ? 'Your answer goes to ' + t.contact + ' by email and closes the request. Clients never see answers in the app.'
+                        : 'Sending sets the ticket to Waiting on business.'}
                   </span>
                   <Button variant={note ? 'outline' : 'primary'} size="sm" onClick={send}>
-                    {note ? 'Add note' : 'Send reply'}
+                    {note ? 'Add note' : t.fromKind === 'client' ? 'Email answer' : 'Send reply'}
                   </Button>
                 </div>
               </div>
@@ -421,7 +439,11 @@ export function Support({ demo }: { demo: Demo }) {
       {dlg && t && (
         <Dialog
           title={'Resolve ' + t.id + '?'}
-          description={t.from + ' gets a closing email with a link to rate the answer. Any new reply reopens the ticket.'}
+          description={
+            t.fromKind === 'client'
+              ? 'Closes the request without sending anything. Answer by email first if the client is waiting.'
+              : t.from + ' gets a closing email with a link to rate the answer. Any new reply reopens the ticket.'
+          }
           width={440}
           onClose={() => setDlg(false)}
           footer={

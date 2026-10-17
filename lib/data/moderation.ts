@@ -46,9 +46,10 @@ export const HIDE_AT_ONCE = ['Inappropriate content', 'Photo is from another bus
 
 /** Who a message about a report can go to, by report kind. */
 export function recipients(x: ModItem): { id: string; label: string }[] {
-  if (x.kind === 'review') return [{ id: 'business', label: x.business + ' (reported it)' }, { id: 'author', label: (x.author ?? '') + ' (wrote the review)' }];
-  if (x.kind === 'listing') return [{ id: 'reporter', label: (x.reporter ?? '').replace('Client · ', '') + ' (reported it)' }, { id: 'business', label: x.business + ' (owns the listing)' }];
-  return [{ id: 'business', label: x.business + ' (reported it)' }, { id: 'client', label: (x.client ?? '') + ' (the client)' }];
+  // Messages go to businesses only. Clients get one-way notices (warnings,
+  // outcomes, removal emails), never a conversation.
+  if (x.kind === 'listing') return [{ id: 'business', label: x.business + ' (owns the listing)' }];
+  return [{ id: 'business', label: x.business + ' (reported it)' }];
 }
 
 export const isActive = (x: ModItem) => x.status === 'open' || x.status === 'fixing';
