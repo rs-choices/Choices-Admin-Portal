@@ -19,7 +19,7 @@ import { QueueTable } from './QueueTable';
 import { VerificationDetail, type DetailAction, type NoteAction } from './VerificationDetail';
 
 export type Demo = 'live' | 'loading' | 'empty' | 'error';
-type Dlg = DetailAction | { merge: Duplicate } | NoteAction | null;
+type Dlg = DetailAction | { dupReject: Duplicate } | NoteAction | null;
 
 const byOldest = (a: Verification, b: Verification) => new Date(a.submitted).getTime() - new Date(b.submitted).getTime();
 
@@ -97,9 +97,9 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
       return closeDlg();
     }
     if (typeof dlg === 'object') {
-      const p = dlg.merge;
+      const p = dlg.dupReject;
       setDupes((xs) => xs.filter((x) => x.id !== p.id));
-      flash(p.b.outlets + ' outlet moved into ' + p.a.name + '. ' + p.b.name + ' archived.');
+      flash(p.b.name + ' rejected. The owner gets an email saying ' + p.a.name + ' already exists.');
       return closeDlg();
     }
     if (!sel) return;
@@ -206,11 +206,11 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
         ready && (
           <Duplicates
             dupes={dupeList}
-            onNotDup={(p) => {
+            onDismiss={(p) => {
               setDupes((xs) => xs.filter((x) => x.id !== p.id));
-              flash(p.a.name + ' and ' + p.b.name + ' marked as different businesses.');
+              flash('Flag dismissed. ' + p.a.name + ' and ' + p.b.name + ' stay separate.');
             }}
-            onMerge={(p) => openDlg({ merge: p })}
+            onReject={(p) => openDlg({ dupReject: p })}
           />
         )
       )}
@@ -257,13 +257,13 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
         </Dialog>
       );
     }
-    const merge = typeof dlg === 'object' && 'merge' in dlg ? dlg.merge : null;
+    const dupReject = typeof dlg === 'object' && 'dupReject' in dlg ? dlg.dupReject : null;
     const name = sel?.name ?? '';
-    const [title, desc, cta, danger, width] = merge
+    const [title, desc, cta, danger, width] = dupReject
       ? [
-          `Merge into ${merge.a.name}?`,
-          `${merge.b.outlets} outlet from ${merge.b.name} moves to the existing business. ${merge.b.name} is archived and its owner loses access.`,
-          'Merge outlets',
+          `Reject ${dupReject.b.name}?`,
+          `The owner gets an email saying a business under this name already exists (${dupReject.a.name}). Nothing is merged.`,
+          'Reject',
           true,
           480,
         ]

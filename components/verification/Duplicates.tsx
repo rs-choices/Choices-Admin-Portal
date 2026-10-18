@@ -17,7 +17,9 @@ const FIELDS: [string, keyof DuplicateSide][] = [
 // (same area), as in the design.
 const same = (a: string, b: string) => a === b || a.split(',')[0] === b.split(',')[0];
 
-export function Duplicates({ dupes, onNotDup, onMerge }: { dupes: Duplicate[]; onNotDup: (p: Duplicate) => void; onMerge: (p: Duplicate) => void }) {
+// Businesses and outlets are never merged: a flag is dismissed, or the new
+// request is rejected and its owner is told the business already exists.
+export function Duplicates({ dupes, onDismiss, onReject }: { dupes: Duplicate[]; onDismiss: (p: Duplicate) => void; onReject: (p: Duplicate) => void }) {
   if (dupes.length === 0) {
     return (
       <div className="flex flex-col gap-1.5 rounded-xl bg-white px-6 py-12 text-center shadow-card">
@@ -36,11 +38,11 @@ export function Duplicates({ dupes, onNotDup, onMerge }: { dupes: Duplicate[]; o
             </span>
             <span className="text-[13px] text-muted">Match score {p.score}%</span>
             <span className="flex-1" />
-            <Button variant="outline" size="sm" onClick={() => onNotDup(p)}>
-              Not a duplicate
+            <Button variant="outline" size="sm" onClick={() => onDismiss(p)}>
+              Dismiss
             </Button>
-            <Button size="sm" onClick={() => onMerge(p)}>
-              Merge outlets
+            <Button size="sm" onClick={() => onReject(p)}>
+              Reject: already exists
             </Button>
           </div>
           <div className="overflow-x-auto">
