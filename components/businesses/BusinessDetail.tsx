@@ -34,6 +34,8 @@ export function BusinessDetail({
   onTab,
   onSuspend,
   onUnsuspend,
+  onSuspendMember,
+  onUnsuspendMember,
   onUnpublish,
   onRepublish,
   onRefund,
@@ -46,6 +48,8 @@ export function BusinessDetail({
   onTab: (t: DetailTab) => void;
   onSuspend: () => void;
   onUnsuspend: () => void;
+  onSuspendMember: (email: string) => void;
+  onUnsuspendMember: (email: string) => void;
   onUnpublish: (outletId: string) => void;
   onRepublish: (outletId: string) => void;
   onRefund: (invoiceId: string) => void;
@@ -201,13 +205,39 @@ export function BusinessDetail({
       {tab === 'team' && (
         <section className={`${CARD} px-5 py-2`}>
           {team.map((m, i) => (
-            <div key={m.email} className={`grid min-h-[60px] grid-cols-[minmax(0,1fr)_90px_120px] items-center gap-3 text-sm sm:grid-cols-[minmax(0,1fr)_120px_120px] ${i ? 'border-t border-subtle' : ''}`}>
+            <div
+              key={m.email}
+              className={`grid min-h-[60px] grid-cols-[minmax(0,1fr)_80px_110px] items-center gap-x-3 gap-y-1 py-2 text-sm sm:grid-cols-[minmax(0,1fr)_120px_140px_110px] ${i ? 'border-t border-subtle' : ''}`}
+            >
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="font-semibold">{m.name}</span>
                 <span className="truncate text-xs text-muted">{m.email}</span>
               </span>
               <span className="text-[var(--pure-black-variable-300)]">{m.role}</span>
-              <span className="text-[13px] text-muted">{m.status === 'Invited' ? 'Invite pending' : 'Active ' + m.last}</span>
+              <span className="flex flex-col text-[13px] text-muted">
+                {m.status === 'Suspended' ? (
+                  <>
+                    <Badge tone="error">Suspended</Badge>
+                    {m.suspendReason && <span className="mt-0.5 text-xs">{m.suspendReason}</span>}
+                  </>
+                ) : m.status === 'Invited' ? (
+                  'Invite pending'
+                ) : (
+                  'Active ' + m.last
+                )}
+              </span>
+              <span className="col-span-3 sm:col-span-1 sm:justify-self-end">
+                {m.status === 'Active' && !suspended && (
+                  <Button variant="outline" size="sm" onClick={() => onSuspendMember(m.email)}>
+                    Suspend
+                  </Button>
+                )}
+                {m.status === 'Suspended' && (
+                  <Button size="sm" onClick={() => onUnsuspendMember(m.email)}>
+                    Unsuspend
+                  </Button>
+                )}
+              </span>
             </div>
           ))}
         </section>

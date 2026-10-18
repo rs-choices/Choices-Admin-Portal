@@ -54,6 +54,11 @@ export function Content({ demo }: { demo: Demo }) {
     return <NoAccess title="Moderators can't open Content." body="Switch role in the top bar to see this section." />;
   }
 
+  // Only a Super admin changes the FAQ, tags and preference lists; an Admin
+  // sees them read-only and can still write how-to guides.
+  const isSuper = role === 'super';
+  const canEditDoc = (d: Guide) => isSuper || d.kind !== 'FAQ';
+
   const loading = demo === 'loading' || !loaded;
   const all = demo === 'empty' ? [] : docs;
   const articles = loading ? [] : all.filter((d) => kind === 'all' || d.kind === kind);
@@ -158,37 +163,42 @@ export function Content({ demo }: { demo: Demo }) {
                 <span className="text-[13px] text-muted">Updated {fmtDate(dr.updated)}</span>
                 <span className="flex-1" />
                 {dirty && <span className="text-[13px] text-[var(--warning-variable-700)]">Unsaved changes</span>}
-                <Button variant="text" className="px-2" onClick={() => (dr.title.trim() ? commitDoc({}, 'Draft saved.') : flash('Add a title first.'))}>
-                  Save draft
-                </Button>
-                {dr.status === 'Published' ? (
-                  <Button variant="outline" size="sm" onClick={() => setDlg({ doc: true })}>
-                    Unpublish
-                  </Button>
-                ) : (
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      dr.title.trim() && dr.body.trim()
-                        ? commitDoc({ status: 'Published' }, '“' + dr.title + '” published to the Business Portal.')
-                        : flash('Add a title and body before publishing.')
-                    }
-                  >
-                    Publish
-                  </Button>
+                {!canEditDoc(dr) && <span className="text-[13px] text-muted">Only a Super admin can change the FAQ.</span>}
+                {canEditDoc(dr) && (
+                  <>
+                    <Button variant="text" className="px-2" onClick={() => (dr.title.trim() ? commitDoc({}, 'Draft saved.') : flash('Add a title first.'))}>
+                      Save draft
+                    </Button>
+                    {dr.status === 'Published' ? (
+                      <Button variant="outline" size="sm" onClick={() => setDlg({ doc: true })}>
+                        Unpublish
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          dr.title.trim() && dr.body.trim()
+                            ? commitDoc({ status: 'Published' }, '“' + dr.title + '” published to the Business Portal.')
+                            : flash('Add a title and body before publishing.')
+                        }
+                      >
+                        Publish
+                      </Button>
+                    )}
+                  </>
                 )}
               </div>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
                 <label className="flex flex-col gap-1.5 text-[13px] text-muted">
                   Type
-                  <select value={dr.kind} onChange={(e) => field('kind', e.target.value as Guide['kind'])} className={SELECT}>
+                  <select value={dr.kind} disabled={!canEditDoc(dr)} onChange={(e) => field('kind', e.target.value as Guide['kind'])} className={SELECT}>
                     <option value="Guide">How-to guide</option>
-                    <option value="FAQ">FAQ</option>
+                    {(isSuper || dr.kind === 'FAQ') && <option value="FAQ">FAQ</option>}
                   </select>
                 </label>
                 <label className="flex flex-col gap-1.5 text-[13px] text-muted">
                   Category
-                  <select value={dr.category} onChange={(e) => field('category', e.target.value)} className={SELECT}>
+                  <select value={dr.category} disabled={!canEditDoc(dr)} onChange={(e) => field('category', e.target.value)} className={SELECT}>
                     {CATS.map((c) => (
                       <option key={c}>{c}</option>
                     ))}
@@ -198,6 +208,7 @@ export function Content({ demo }: { demo: Demo }) {
               <input
                 value={dr.title}
                 onChange={(e) => field('title', e.target.value)}
+                readOnly={!canEditDoc(dr)}
                 placeholder="Title"
                 aria-label="Title"
                 className="border-x-0 border-b border-t-0 border-solid border-subtle bg-transparent py-1 font-display text-[22px] font-bold leading-[1.3] outline-none"
@@ -205,6 +216,7 @@ export function Content({ demo }: { demo: Demo }) {
               <textarea
                 value={dr.body}
                 onChange={(e) => field('body', e.target.value)}
+                readOnly={!canEditDoc(dr)}
                 rows={10}
                 placeholder="Write the steps in plain language."
                 aria-label="Body"
@@ -226,6 +238,7 @@ export function Content({ demo }: { demo: Demo }) {
         </div>
       )}
 
+      {tab === 'tags' && groups && !isSuper && <p className="m-0 text-[13px] text-muted">Only a Super admin can change tags and preference lists.</p>}
       {tab === 'tags' && groups && (
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,320px),1fr))] items-start gap-4">
           {GROUPS.map(({ k, title, desc }) => {
@@ -244,19 +257,21 @@ export function Content({ demo }: { demo: Demo }) {
                   <h2 className="m-0 font-display text-lg font-semibold">{title}</h2>
                   <span className="text-[13px] text-muted">{desc}</span>
                 </div>
-                <div className="flex gap-2">
-                  <input
-                    value={adds[k] ?? ''}
-                    onChange={(e) => setAdds((x) => ({ ...x, [k]: e.target.value }))}
-                    onKeyDown={(e) => e.key === 'Enter' && add()}
-                    placeholder="Add an item"
-                    aria-label={'Add to ' + title.toLowerCase()}
-                    className={`${FIELD} h-10 min-w-0 flex-1`}
-                  />
-                  <Button variant="outline" size="sm" onClick={add}>
-                    Add
-                  </Button>
-                </div>
+                {isSuper && (
+                  <div className="flex gap-2">
+                    <input
+                      value={adds[k] ?? ''}
+                      onChange={(e) => setAdds((x) => ({ ...x, [k]: e.target.value }))}
+                      onKeyDown={(e) => e.key === 'Enter' && add()}
+                      placeholder="Add an item"
+                      aria-label={'Add to ' + title.toLowerCase()}
+                      className={`${FIELD} h-10 min-w-0 flex-1`}
+                    />
+                    <Button variant="outline" size="sm" onClick={add}>
+                      Add
+                    </Button>
+                  </div>
+                )}
                 <div className="flex flex-col">
                   {arr.map((t, i) => {
                     const isEditing = editing === t.id;
@@ -320,7 +335,7 @@ export function Content({ demo }: { demo: Demo }) {
                           </span>
                         )}
                         <span className="whitespace-nowrap text-xs text-muted">{fmtNum(t.uses)} uses</span>
-                        {actions.map((a) => (
+                        {isSuper && actions.map((a) => (
                           <button
                             key={a.label}
                             type="button"

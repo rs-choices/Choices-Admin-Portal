@@ -35,7 +35,14 @@ import { ME } from '@/lib/verification';
 import { BusinessDetail } from './BusinessDetail';
 
 export type Demo = 'live' | 'loading' | 'empty' | 'error';
-type Dlg = { kind: 'suspend' | 'unsuspend' } | { kind: 'unpub'; id: string } | { kind: 'repub'; id: string } | { kind: 'refund'; id: string } | null;
+type Dlg =
+  | { kind: 'suspend' | 'unsuspend' }
+  | { kind: 'unpub'; id: string }
+  | { kind: 'repub'; id: string }
+  | { kind: 'refund'; id: string }
+  | { kind: 'memberSuspend'; email: string }
+  | { kind: 'memberUnsuspend'; email: string }
+  | null;
 
 const BIZ_COLS = 'grid grid-cols-[minmax(220px,2fr)_90px_110px_110px_110px_110px_120px_36px] items-center';
 const MEM_COLS = 'grid grid-cols-[minmax(220px,1.6fr)_minmax(180px,1.3fr)_100px_110px_120px_120px_36px] items-center';
@@ -111,6 +118,21 @@ export function Businesses({ demo }: { demo: Demo }) {
 
   const confirm = () => {
     if (!dlg || !sel || !det) return;
+    if (dlg.kind === 'memberSuspend' || dlg.kind === 'memberUnsuspend') {
+      const m = allMembers.find((x) => x.email === dlg.email);
+      if (!m) return closeDlg();
+      if (dlg.kind === 'memberSuspend') {
+        if (!text.trim()) return setErr('Add a reason. The member sees it in their suspension email.');
+        setAllMembers((xs) => xs.map((x) => (x.email === m.email ? { ...x, status: 'Suspended', suspendReason: text.trim() } : x)));
+        act(sel.id, sel, 'Suspended team member ' + m.name + ': ' + text.trim());
+        flash(m.name + ' suspended. They can’t sign in to the Business Portal; ' + sel.name + ' stays live.');
+      } else {
+        setAllMembers((xs) => xs.map((x) => (x.email === m.email ? { ...x, status: 'Active', suspendReason: undefined } : x)));
+        act(sel.id, sel, 'Unsuspended team member ' + m.name);
+        flash(m.name + ' can sign in to the Business Portal again.');
+      }
+      return closeDlg();
+    }
     if (dlg.kind === 'suspend') {
       if (!text.trim()) return setErr('Add a reason. The business sees it in their suspension email.');
       setB(sel.id, { status: 'suspended', suspendReason: text.trim(), prevStatus: sel.status });
@@ -158,6 +180,18 @@ export function Businesses({ demo }: { demo: Demo }) {
       {
         suspend: ['Suspend ' + sel.name + '?', 'Listings disappear from the client app, open bookings stay valid, and the team is signed out.', 'Suspend', true],
         unsuspend: ['Unsuspend ' + sel.name + '?', 'Listings go back live and the team can sign in again.', 'Unsuspend', false],
+        memberSuspend: [
+          'Suspend ' + (allMembers.find((x) => dlg.kind === 'memberSuspend' && x.email === dlg.email)?.name ?? 'this member') + '?',
+          'They can’t sign in to the Business Portal. ' + sel.name + ' and its listings stay live.',
+          'Suspend',
+          true,
+        ],
+        memberUnsuspend: [
+          'Unsuspend ' + (allMembers.find((x) => dlg.kind === 'memberUnsuspend' && x.email === dlg.email)?.name ?? 'this member') + '?',
+          'They can sign in to the Business Portal again.',
+          'Unsuspend',
+          false,
+        ],
         unpub: ['Unpublish this listing?', 'Clients stop seeing it straight away. The business gets an email, and you can publish it again later.', 'Unpublish', true],
         repub: ['Publish this listing again?', 'Clients can see it straight away. The business gets an email.', 'Publish again', false],
         refund: [
@@ -184,9 +218,9 @@ export function Businesses({ demo }: { demo: Demo }) {
           </>
         }
       >
-        {dlg.kind === 'suspend' && (
+        {(dlg.kind === 'suspend' || dlg.kind === 'memberSuspend') && (
           <label className="flex flex-col gap-2 text-sm">
-            Reason (required, shown to the business)
+            {dlg.kind === 'suspend' ? 'Reason (required, shown to the business)' : 'Reason (required, shown to the member)'}
             <textarea
               value={text}
               onChange={(e) => {
@@ -217,6 +251,8 @@ export function Businesses({ demo }: { demo: Demo }) {
           onTab={(t) => router.replace('/businesses?id=' + sel.id + (t === 'overview' ? '' : '&tab=' + t), { scroll: false })}
           onSuspend={() => openDlg({ kind: 'suspend' })}
           onUnsuspend={() => openDlg({ kind: 'unsuspend' })}
+          onSuspendMember={(email) => openDlg({ kind: 'memberSuspend', email })}
+          onUnsuspendMember={(email) => openDlg({ kind: 'memberUnsuspend', email })}
           onUnpublish={(id) => openDlg({ kind: 'unpub', id })}
           onRepublish={(id) => openDlg({ kind: 'repub', id })}
           onRefund={(id) => openDlg({ kind: 'refund', id })}

@@ -248,6 +248,8 @@ export interface Member {
   bid: string;
   role: MemberRole;
   status: 'Active' | 'Invited' | 'Suspended';
+  /** Why the Choices team suspended this member; the business stays live. */
+  suspendReason?: string;
   last: string;
   joined: string;
 }
