@@ -206,9 +206,9 @@ export function VerificationQueue({ demo }: { demo: Demo }) {
         ready && (
           <Duplicates
             dupes={dupeList}
-            onDismiss={(p) => {
+            onAccept={(p) => {
               setDupes((xs) => xs.filter((x) => x.id !== p.id));
-              flash('Flag dismissed. ' + p.a.name + ' and ' + p.b.name + ' stay separate.');
+              flash(p.b.name + ' accepted. Its request goes ahead.');
             }}
             onReject={(p) => openDlg({ dupReject: p })}
           />
