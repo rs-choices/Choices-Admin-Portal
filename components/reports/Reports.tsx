@@ -76,8 +76,7 @@ export function Reports({ demo }: { demo: Demo }) {
   const patch = (id: string, fn: (x: ModItem) => ModItem) => setItems((s) => ({ ...s, [tab]: s[tab].map((x) => (x.id === id ? fn(x) : x)) }));
   const log = (x: ModItem, what: string): HistoryEntry[] => [...x.history, { at: new Date().toISOString(), who: ME, what }];
   const resolve = (x: ModItem, status: ModStatus, what: string, msg: string) => {
-    // Kept content goes back live; removed content stays down.
-    patch(x.id, (y) => ({ ...y, status, hidden: status === 'removed' ? y.hidden : false, history: log(y, what) }));
+    patch(x.id, (y) => ({ ...y, status, history: log(y, what) }));
     bumpCount('reports', -1);
     flash(msg);
   };
@@ -256,7 +255,6 @@ export function Reports({ demo }: { demo: Demo }) {
                   <span className="w-full truncate text-[13px] text-muted">{x.text}</span>
                   <span className="flex flex-wrap gap-1.5">
                     <Badge tone={tone}>{label}</Badge>
-                    {x.hidden && x.status !== 'removed' && <Badge tone="error">Hidden</Badge>}
                     <Badge tone="neutral">{x.reason}</Badge>
                   </span>
                 </button>
@@ -278,12 +276,6 @@ export function Reports({ demo }: { demo: Demo }) {
                 </Badge>
               </div>
 
-              {it.hidden && isActive(it) && (
-                <div className="flex items-center gap-2.5 rounded-[14px] bg-[var(--error-opacity-10)] px-4 py-3 text-sm text-error">
-                  <Icon name="ban" size={18} />
-                  Hidden while you review it, because the reason is serious. Keep puts it back live.
-                </div>
-              )}
               {it.status === 'fixing' && (
                 <div className="flex items-center gap-2.5 rounded-[14px] bg-[var(--activities-blue-opacity-10)] px-4 py-3 text-sm text-[var(--activities-blue-variable-700)]">
                   <Icon name="info" size={18} />
