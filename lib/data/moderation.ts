@@ -21,8 +21,6 @@ export type ModItem = {
   text: string;
   at: string;
   reason?: string;
-  /** Taken down as soon as it was reported, because the reason is serious. */
-  hidden?: boolean;
   // reviews
   author?: string;
   authorWarnings?: number;
@@ -39,13 +37,6 @@ export type ModItem = {
   booking?: string;
 };
 
-/**
- * Reasons serious enough to hide the content straight away, before anyone
- * decides. Everything else stays live while the report is reviewed, so a
- * business cannot silence a fair review just by reporting it.
- */
-export const HIDE_AT_ONCE = ['Inappropriate content', 'Photo is from another business', 'Abusive language', 'Spam or advertising'];
-
 /** Who a message about a report can go to, by report kind. */
 export function recipients(x: ModItem): { id: string; label: string }[] {
   // Messages go to businesses only. Clients get one-way notices (warnings,
@@ -57,14 +48,13 @@ export function recipients(x: ModItem): { id: string; label: string }[] {
 export const isActive = (x: ModItem) => x.status === 'open' || x.status === 'fixing';
 
 // Mock fetch of the two moderation queues. Reported listings and photos also
-// get the automatic "business notified" step, and serious reports start hidden.
+// get the automatic "business notified" step. A report never hides anything:
+// the content stays live until an admin removes it.
 export function getModeration(): Promise<Record<ModTab, ModItem[]>> {
   const withRules = (x: ModItem): ModItem => {
-    const hidden = HIDE_AT_ONCE.includes(x.reason ?? '');
     const auto: HistoryEntry[] = [];
-    if (hidden) auto.push({ at: x.at, who: 'System', what: 'Hidden while the Choices team reviews it' });
     if (x.kind === 'listing') auto.push({ at: x.at, who: 'System', what: x.business + ' notified of the report' });
-    return { ...x, hidden, history: [...x.history, ...auto] };
+    return { ...x, history: [...x.history, ...auto] };
   };
   return new Promise((resolve) =>
     setTimeout(
