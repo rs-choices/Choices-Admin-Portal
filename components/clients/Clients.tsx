@@ -104,7 +104,7 @@ export function Clients({ demo }: { demo: Demo }) {
     const banner = del
       ? 'The client deleted their account from the app. Reviews show as “Deleted client”; past bookings stay with the business for their records.'
       : sel.status === 'suspended'
-        ? 'Suspended: ' + sel.suspendReason + '. Their reviews are hidden.'
+        ? 'Suspended: ' + sel.suspendReason + '. Their reviews stay visible; remove one from Reports if needed.'
         : sel.deletionRequested
           ? 'This client asked for account deletion in T-2275. Clients delete their own account in the app, under Settings › Delete account. Email them those steps from the ticket.'
           : '';
@@ -121,8 +121,8 @@ export function Clients({ demo }: { demo: Demo }) {
     ];
     const [dTitle, dDesc, dCta, danger] =
       dlg === 'unsuspend'
-        ? ['Unsuspend ' + sel.name + '?', 'They can book again and hidden reviews come back. They get an email.', 'Unsuspend', false]
-        : ['Suspend ' + sel.name + '?', 'They can’t book and their reviews are hidden until you unsuspend. They get an email with the reason.', 'Suspend', true];
+        ? ['Unsuspend ' + sel.name + '?', 'They can book, review and report again. They get an email.', 'Unsuspend', false]
+        : ['Suspend ' + sel.name + '?', 'They can still browse and keep their bookings, but can’t book, review or report until you unsuspend. Their reviews stay visible. They get an email with the reason.', 'Suspend', true];
 
     return (
       <>

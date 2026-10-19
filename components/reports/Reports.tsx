@@ -168,7 +168,7 @@ export function Reports({ demo }: { demo: Demo }) {
       ],
       suspendClient: [
         'Suspend ' + (it?.client ?? '') + '?',
-        'They can’t book and their reviews are hidden until you unsuspend them in Clients. They get an email with the reason.',
+        'They can’t book, review or report until you unsuspend them in Clients. Their reviews stay visible. They get an email with the reason.',
         'Suspend',
         'Reason (required)',
         'Repeated no-shows after a warning.',
